@@ -1,0 +1,50 @@
+{
+  "apple": {
+    "name": "Red Apple",
+    "price": 2.50
+  },
+  "bread": {
+    "name": "Gardenia Quick Bites Bread",
+    "price": 3.20
+  },
+  "chips": {
+    "name": "Potato Chips",
+    "price": 4.50
+  },
+  "egg": {
+    "name": "Chicken Eggs (6 pcs)",
+    "price": 4.80
+  },
+  "milk": {
+    "name": "Fresh Milk 1L",
+    "price": 6.90
+  },
+  "mineral_water": {
+    "name": "Mineral Water 1.5L",
+    "price": 2.00
+  },
+  "oil": {
+    "name": "Cooking Oil 1kg",
+    "price": 8.90
+  },
+  "rice": {
+    "name": "Rice 5kg",
+    "price": 15.00
+  },
+  "sponge": {
+    "name": "Cleaning Sponge",
+    "price": 2.30
+  },
+  "tissue": {
+    "name": "Facial Tissue Box",
+    "price": 3.50
+  },
+  "toothbrush": {
+    "name": "Toothbrush",
+    "price": 2.80
+  },
+  "toothpaste": {
+    "name": "Toothpaste",
+    "price": 5.90
+  }
+}
