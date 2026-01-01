@@ -1,26 +1,159 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="#000000"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="10dp">
+
+    <!-- 🔹 STATUS HEADER -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="#1E1E1E"
+        app:cardCornerRadius="12dp"
+        android:layout_marginBottom="10dp">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <View
+                android:id="@+id/statusDot"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:background="@drawable/status_dot_grey"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="12dp" />
+
+            <TextView
+                android:id="@+id/statusText"
+                android:text="Smart Assistant Idle"
+                android:textColor="#AAAAAA"
+                android:textSize="14sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- 🔹 TOP BUTTONS -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="2"
+        android:layout_marginBottom="10dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnScan"
+            android:text="📷 SCAN"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:cornerRadius="10dp"
+            android:backgroundTint="#80BBFF"
+            android:textColor="#000000"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnTotal"
+            android:text="🏁 TOTAL"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:cornerRadius="10dp"
+            android:backgroundTint="#FF00D0"
+            android:textColor="#000000"/>
+    </LinearLayout>
+
+    <!-- 🔹 SCANNER DISPLAY -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="#1E1E1E"
+        app:cardCornerRadius="12dp"
+        android:layout_marginBottom="10dp">
+
+        <TextView
+            android:id="@+id/scannerText"
+            android:text="READY"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:textColor="#E0E0E0"
+            android:gravity="center"
+            android:padding="24dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </androidx.cardview.widget.CardView>
 
     <androidx.camera.view.PreviewView
         android:id="@+id/previewView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="354dp"
+        android:layout_marginBottom="10dp"
+        app:implementationMode="performance" />
 
-    <com.example.smartshopping.OverlayView
-        android:id="@+id/overlay"
+    <!-- 🔹 CART LIST -->
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:cardBackgroundColor="#1E1E1E"
+        app:cardCornerRadius="12dp"
+        android:layout_marginBottom="10dp">
 
-    <TextView
-        android:id="@+id/statusText"
-        android:layout_width="wrap_content"
+        <LinearLayout
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/cartRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="49dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/totalText"
+                android:text="RM 0.00"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="#03DAC6"
+                android:gravity="end"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- 🔹 BOTTOM CONFIRM BUTTONS -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/white"
-        android:textSize="20sp"
-        android:layout_margin="16dp"
-        android:background="#80000000" />
-</FrameLayout>
+        android:weightSum="2">
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnYes"
+            android:text="✔ YES"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:cornerRadius="10dp"
+            android:backgroundTint="#00FF0D"
+            android:textColor="#000000"/>
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnNo"
+            android:text="✖ NO"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:cornerRadius="10dp"
+            android:backgroundTint="#C62828"
+            android:textColor="#FFFFFF"/>
+    </LinearLayout>
+
+</LinearLayout>
