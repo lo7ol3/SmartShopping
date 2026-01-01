@@ -2,12 +2,12 @@ package com.example.smartshopping;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.graphics.*;
-import android.media.Image;
+import android.graphics.Bitmap;
+import android.graphics.RectF;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.*;
 import androidx.camera.lifecycle.ProcessCameraProvider;
@@ -17,24 +17,21 @@ import androidx.core.content.ContextCompat;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
-import org.tensorflow.lite.Interpreter;
-
-import java.io.ByteArrayOutputStream;
-import java.nio.ByteBuffer;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int CAMERA_REQUEST = 1001;
-
     private PreviewView previewView;
+    private OverlayView overlay;
     private TextView statusText;
 
-    private Interpreter interpreter;
-    private YoloDetector detector;
+    private YoloV8Detector detector;
+    private ExecutorService cameraExecutor;
+    private TextToSpeech tts;
 
-    private ExecutorService executor = Executors.newSingleThreadExecutor();
+    private long lastSpokenTime = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,16 +39,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         previewView = findViewById(R.id.previewView);
+        overlay = findViewById(R.id.overlay);
         statusText = findViewById(R.id.statusText);
 
-        previewView.setImplementationMode(
-                PreviewView.ImplementationMode.COMPATIBLE
-        );
+        cameraExecutor = Executors.newSingleThreadExecutor();
+
+        tts = new TextToSpeech(this, s -> tts.setLanguage(Locale.US));
 
         try {
-            interpreter = TFLiteModelLoader.loadModel(this);
-            detector = new YoloDetector(this, interpreter);
-            statusText.setText("Model ready");
+            detector = new YoloV8Detector(this);
+            statusText.setText("YOLOv8 model loaded");
         } catch (Exception e) {
             statusText.setText("Model load failed");
             return;
@@ -62,15 +59,11 @@ public class MainActivity extends AppCompatActivity {
             startCamera();
         } else {
             ActivityCompat.requestPermissions(
-                    this,
-                    new String[]{Manifest.permission.CAMERA},
-                    CAMERA_REQUEST
-            );
+                    this, new String[]{Manifest.permission.CAMERA}, 1001);
         }
     }
 
     private void startCamera() {
-
         ListenableFuture<ProcessCameraProvider> future =
                 ProcessCameraProvider.getInstance(this);
 
@@ -87,10 +80,46 @@ public class MainActivity extends AppCompatActivity {
                                         ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                                 .build();
 
-                analysis.setAnalyzer(executor, image -> {
-                    Bitmap bitmap = imageToBitmap(image);
-                    String result = detector.detect(bitmap);
-                    runOnUiThread(() -> statusText.setText(result));
+                analysis.setAnalyzer(cameraExecutor, image -> {
+
+                    Bitmap bitmap = ImageUtils.imageToBitmap(image);
+                    bitmap = ImageUtils.rotateBitmap(
+                            bitmap, image.getImageInfo().getRotationDegrees());
+
+                    if (bitmap == null) {
+                        image.close();
+                        return;
+                    }
+
+                    List<YoloV8Detector.Detection> results =
+                            detector.detect(bitmap);
+
+                    List<RectF> boxes = new ArrayList<>();
+
+                    for (YoloV8Detector.Detection d : results) {
+
+                        boxes.add(d.box);
+
+                        long now = System.currentTimeMillis();
+                        if (now - lastSpokenTime > 3000) {
+                            String spokenLabel = d.label.replace("_", " ");
+                            tts.speak(spokenLabel + " detected",
+                                    TextToSpeech.QUEUE_FLUSH,
+                                    null, null);
+                            lastSpokenTime = now;
+                        }
+
+                        runOnUiThread(() ->
+                                statusText.setText(d.label));
+                    }
+
+                    Bitmap finalBitmap = bitmap;
+                    runOnUiThread(() ->
+                            overlay.setBoxes(
+                                    boxes,
+                                    finalBitmap.getWidth(),
+                                    finalBitmap.getHeight()));
+
                     image.close();
                 });
 
@@ -98,60 +127,19 @@ public class MainActivity extends AppCompatActivity {
                 provider.bindToLifecycle(
                         this,
                         CameraSelector.DEFAULT_BACK_CAMERA,
-                        preview,
-                        analysis
-                );
+                        preview, analysis);
 
             } catch (Exception e) {
-                statusText.setText("Camera error");
+                runOnUiThread(() ->
+                        statusText.setText("Camera error"));
             }
         }, ContextCompat.getMainExecutor(this));
     }
 
-    private Bitmap imageToBitmap(ImageProxy image) {
-
-        Image img = image.getImage();
-        ByteBuffer y = img.getPlanes()[0].getBuffer();
-        ByteBuffer u = img.getPlanes()[1].getBuffer();
-        ByteBuffer v = img.getPlanes()[2].getBuffer();
-
-        int ySize = y.remaining();
-        int uSize = u.remaining();
-        int vSize = v.remaining();
-
-        byte[] nv21 = new byte[ySize + uSize + vSize];
-
-        y.get(nv21, 0, ySize);
-        v.get(nv21, ySize, vSize);
-        u.get(nv21, ySize + vSize, uSize);
-
-        YuvImage yuv = new YuvImage(
-                nv21, ImageFormat.NV21,
-                image.getWidth(), image.getHeight(), null);
-
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        yuv.compressToJpeg(
-                new Rect(0, 0, image.getWidth(), image.getHeight()), 90, out);
-
-        byte[] bytes = out.toByteArray();
-        Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-
-        Matrix rotate = new Matrix();
-        rotate.postRotate(image.getImageInfo().getRotationDegrees());
-
-        return Bitmap.createBitmap(
-                bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), rotate, true);
-    }
-
     @Override
-    public void onRequestPermissionsResult(
-            int requestCode, @NonNull String[] permissions,
-            @NonNull int[] grantResults) {
-
-        if (requestCode == CAMERA_REQUEST &&
-                grantResults.length > 0 &&
-                grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            startCamera();
-        }
+    protected void onDestroy() {
+        cameraExecutor.shutdown();
+        if (tts != null) tts.shutdown();
+        super.onDestroy();
     }
 }

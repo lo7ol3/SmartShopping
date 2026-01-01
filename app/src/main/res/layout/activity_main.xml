@@ -6,18 +6,21 @@
     <androidx.camera.view.PreviewView
         android:id="@+id/previewView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="fitCenter" />
+        android:layout_height="match_parent" />
+
+    <com.example.smartshopping.OverlayView
+        android:id="@+id/overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <TextView
         android:id="@+id/statusText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Starting..."
-        android:textSize="18sp"
-        android:textColor="#FFFFFF"
-        android:background="#AA000000"
-        android:padding="12dp"
-        android:layout_gravity="top|center_horizontal" />
-
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
+        android:layout_margin="16dp"
+        android:background="#80000000" />
 </FrameLayout>
+
+

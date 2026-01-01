@@ -3,7 +3,7 @@ bread
 chips
 egg
 milk
-mineral water
+mineral_water
 oil
 rice
 sponge
