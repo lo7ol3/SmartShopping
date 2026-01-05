@@ -1,0 +1,63 @@
+{
+  "apple": {
+    "name": "Red Apple",
+    "price": 2.50
+  },
+  "bread": {
+    "name": "Gardenia Quick Bites Bread",
+    "price": 1.20
+  },
+  "chips": {
+    "name": "Potato Chips",
+    "price": 4.50
+  },
+  "egg": {
+    "name": "Chicken Eggs (10 pcs)",
+    "price": 6.98
+  },
+  "milk": {
+    "name": "Fresh Milk 1L",
+    "price": 6.90
+  },
+  "mineral_water": {
+    "name": "Mineral Water 1.5L",
+    "price": 2.00
+  },
+  "oil": {
+    "name": "Cooking Oil 1kg",
+    "price": 8.90
+  },
+  "rice": {
+    "name": "Rice 5kg",
+    "price": 15.00
+  },
+  "sponge": {
+    "name": "Cleaning Sponge",
+    "price": 2.30
+  },
+  "tissue": {
+    "name": "Facial Tissue",
+    "price": 3.50
+  },
+  "toothbrush": {
+    "name": "Toothbrush",
+    "price": 2.80
+  },
+  "toothpaste": {
+    "name": "Toothpaste",
+    "price": 5.90
+  },
+   "sardine": {
+    "name": "Canned Sardine",
+    "price": 8.59
+  },
+   "milo": {
+    "name": "Milo",
+    "price": 10.26
+  },
+   "prego": {
+    "name": "Prego Sauce",
+    "price": 4.30
+  }
+
+}

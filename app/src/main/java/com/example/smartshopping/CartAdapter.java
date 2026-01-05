@@ -12,45 +12,45 @@ import java.util.List;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
 
-    private final List<CartItem> items;
+    private final List<CartItem> cart;
 
-    public CartAdapter(List<CartItem> items) {
-        this.items = items;
+    public CartAdapter(List<CartItem> cart) {
+        this.cart = cart;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(android.R.layout.simple_list_item_2, parent, false);
+                .inflate(R.layout.item_cart, parent, false);
         return new ViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        CartItem item = items.get(position);
+        CartItem item = cart.get(position);
 
-        holder.line1.setText(
-                item.qty + " x " + item.name.toUpperCase()
-        );
-
-        holder.line2.setText(
+        String name = item.getName() == null ? "" : item.getName();
+        holder.name.setText(name.replace("_", " ").toUpperCase());
+        holder.qty.setText("x" + item.getQty());
+        holder.price.setText(
                 "RM " + String.format("%.2f", item.getTotal())
         );
     }
 
     @Override
     public int getItemCount() {
-        return items.size();
+        return cart.size();
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView line1, line2;
+        TextView name, qty, price;
 
         ViewHolder(View itemView) {
             super(itemView);
-            line1 = itemView.findViewById(android.R.id.text1);
-            line2 = itemView.findViewById(android.R.id.text2);
+            name = itemView.findViewById(R.id.cartItemName);
+            qty = itemView.findViewById(R.id.cartItemQty);
+            price = itemView.findViewById(R.id.cartItemPrice);
         }
     }
 }
